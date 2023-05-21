@@ -4,15 +4,13 @@ import Property from "../models/propertyModel.js";
 
 // @desc    Fetch all properties
 // @route   GET /api/properties
-// @access  Public
 const getProperties = asyncHandler(async (req, res) => {
   const properties = await Property.find({});
   res.send(properties);
 });
 
-// @desc    Create a product
-// @route   POST /api/products
-// @access  Private/Admin
+// @desc    Create a Property
+// @route   POST /api/properties
 const createProperty = asyncHandler(async (req, res) => {
   const { name, description, isTaken, category, location, price } = req.body;
 

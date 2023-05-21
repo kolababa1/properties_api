@@ -12,7 +12,6 @@ import {
 const router = express.Router();
 
 router.get("/", getOrders);
-// router.get("/:id", getOrderById);
 router.get("/property", getOrderByProperty);
 router.get("/renters", getOrderByRenters);
 router.get("/buyers", getOrderByBuyers);

@@ -9,12 +9,8 @@ const addOrder = asyncHandler(async (req, res) => {
   const { bookingType, propertyId } = req.body;
   const { _id: userId, role } = req.user;
 
-  //Checks if the property Exists and available
+  //Checks if the property Exists
   const propertyExist = await Property.findById({ _id: propertyId });
-  //   if (propertyExist) {
-  //     res.status(400);
-  //     throw new Error("Property not available");
-  //   }
 
   //Prevents duplicate order
   const orderExist = await Order.findOne({ userId, propertyId });
@@ -69,63 +65,59 @@ const addOrder = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Get order by ID
-// @route   GET /api/orders/:id
-// @access  Private
-// const getOrderById = asyncHandler(async (req, res) => {
-//   const order = await Order.findById(req.params.id).populate(
-//     "user",
-//     "name email"
-//   );
-
-//   if (order) {
-//     res.json(order);
-//   } else {
-//     res.status(404);
-//     throw new Error("Order not found");
-//   }
-// });
-
-// @desc    Get logged in user orders
+// @desc    Gets List of all Renters
 // @route   GET /api/orders/renters
 const getOrderByRenters = asyncHandler(async (req, res) => {
   const orders = await Order.find({ bookingType: "rent" }).populate(
     "userId",
     "name dateOfBirth"
   );
-  res.json(orders);
+  const orderDetails = orders.map((order) => ({
+    Name: order.userId.name,
+    DOB: order.userId.dateOfBirth,
+    PropertyId: order.propertyId,
+  }));
+  res.json(orderDetails);
 });
 
-// @desc    Get logged in user orders
+// @desc    Gets List of all Buyers
 // @route   GET /api/orders/buyers
 const getOrderByBuyers = asyncHandler(async (req, res) => {
   const orders = await Order.find({ bookingType: "sale" }).populate(
     "userId",
     "name dateOfBirth"
   );
-  res.json(orders);
+  const orderDetails = orders.map((order) => ({
+    Name: order.userId.name,
+    DOB: order.userId.dateOfBirth,
+    PropertyId: order.propertyId,
+  }));
+  res.json(orderDetails);
 });
 
-// @desc    Get logged in user orders
-// @route   GET /api/orders/myorders
-// @access  Private
+// @desc    Gets Orders by Property
+// @route   GET /api/orders/property
 const getOrderByProperty = asyncHandler(async (req, res) => {
   const { propertyId } = req.body;
 
-  //Checks if the property Exists and available
-  const propertyExist = await Property.findById({ _id: propertyId });
-  const orders = await Order.find({ propertyId }).populate(
-    "userId",
-    "name dateOfBirth"
-  );
-  res.json(orders);
+  const orders = await Order.find({ propertyId })
+    .populate("userId")
+    .populate("propertyId");
+  const propertyDetails = orders.map((order) => ({
+    Customer_Name: order.userId.name,
+    DOB: order.userId.dateOfBirth,
+    Property_Name: order.propertyId.name,
+    Property_Description: order.propertyId.description,
+    Price: order.propertyId.price,
+  }));
+  res.json(propertyDetails);
 });
 
 // @desc    Get all orders
 // @route   GET /api/orders
-// @access  Private/Admin
 const getOrders = asyncHandler(async (req, res) => {
-  const orders = await Order.find({}).populate("userId", "name dateOfBirth");
+  const orders = await Order.find({}).populate("userId").populate("propertyId");
+
   res.json(orders);
 });
 
