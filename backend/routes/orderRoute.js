@@ -6,14 +6,14 @@ import {
   addOrder,
   getOrderByBuyers,
   getOrderByRenters,
-  getOrderByUser,
+  getOrderByProperty,
   getOrders,
 } from "../controllers/orderController.js";
 const router = express.Router();
 
 router.get("/", getOrders);
 // router.get("/:id", getOrderById);
-router.get("/user", getOrderByUser);
+router.get("/property", getOrderByProperty);
 router.get("/renters", getOrderByRenters);
 router.get("/buyers", getOrderByBuyers);
 

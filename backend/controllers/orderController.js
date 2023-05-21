@@ -22,7 +22,7 @@ const addOrder = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("Order already exists");
   }
-  if (orderExist && propertyExist.isTaken && bookingType === "rent") {
+  if (orderExist && bookingType === "rent") {
     res.status(400);
     throw new Error("Order already exists");
   }
@@ -109,8 +109,12 @@ const getOrderByBuyers = asyncHandler(async (req, res) => {
 // @desc    Get logged in user orders
 // @route   GET /api/orders/myorders
 // @access  Private
-const getOrderByUser = asyncHandler(async (req, res) => {
-  const orders = await Order.find({ user: req.user._id }).populate(
+const getOrderByProperty = asyncHandler(async (req, res) => {
+  const { propertyId } = req.body;
+
+  //Checks if the property Exists and available
+  const propertyExist = await Property.findById({ _id: propertyId });
+  const orders = await Order.find({ propertyId }).populate(
     "userId",
     "name dateOfBirth"
   );
@@ -127,8 +131,8 @@ const getOrders = asyncHandler(async (req, res) => {
 
 export {
   addOrder,
-  getOrderByUser,
   getOrders,
+  getOrderByProperty,
   getOrderByBuyers,
   getOrderByRenters,
 };
