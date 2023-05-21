@@ -1,12 +1,13 @@
 import express from "express";
+const app = express();
+
 import dotenv from "dotenv";
 dotenv.config();
 
 import cookieParser from "cookie-parser";
-import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
-import connectDB from "./config/db.js";
 
-const app = express();
+import connectDB from "./config/db.js";
+connectDB();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -21,6 +22,8 @@ app.use("/api/users", userRoute);
 app.use("/api/properties", propertyRoute);
 app.use("/api/orders", orderRoute);
 
+//Error Middleware
+import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 app.use(notFound);
 app.use(errorHandler);
 
