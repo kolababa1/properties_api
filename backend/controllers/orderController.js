@@ -10,15 +10,11 @@ const addOrder = asyncHandler(async (req, res) => {
   const { _id: userId, role } = req.user;
 
   //Checks if the property Exists and available
-  const propertyExist = await Property.findOne({ propertyId });
-  if (propertyExist && propertyExist.isTaken) {
-    res.status(400);
-    throw new Error("Property not available");
-  }
-  if (!propertyExist) {
-    res.status(400);
-    throw new Error("Property not available");
-  }
+  const propertyExist = await Property.findById({ _id: propertyId });
+  //   if (propertyExist) {
+  //     res.status(400);
+  //     throw new Error("Property not available");
+  //   }
 
   //Prevents duplicate order
   const orderExist = await Order.findOne({ userId, propertyId });
@@ -32,7 +28,11 @@ const addOrder = asyncHandler(async (req, res) => {
   }
 
   //creates rent order
-  if (role === "renter" && bookingType === "rent") {
+  if (
+    role === "renter" &&
+    bookingType === "rent" &&
+    propertyExist.category === "rent"
+  ) {
     const order = await Order.create({
       userId,
       propertyId,
@@ -46,7 +46,11 @@ const addOrder = asyncHandler(async (req, res) => {
     }
   }
   //creates sale order
-  else if (role === "buyer" && bookingType === "sale") {
+  else if (
+    role === "buyer" &&
+    bookingType === "sale" &&
+    propertyExist.category === "sale"
+  ) {
     const order = await Order.create({
       userId,
       propertyId,
@@ -117,7 +121,7 @@ const getOrderByUser = asyncHandler(async (req, res) => {
 // @route   GET /api/orders
 // @access  Private/Admin
 const getOrders = asyncHandler(async (req, res) => {
-  const orders = await Order.find({}).populate("user", "id name");
+  const orders = await Order.find({}).populate("userId", "name dateOfBirth");
   res.json(orders);
 });
 
