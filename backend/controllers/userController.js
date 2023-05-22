@@ -24,12 +24,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   if (user) {
     generateToken(res, user._id);
-    res.status(201).json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-    });
+    res.status(201).json(user);
   } else {
     res.status(400);
     throw new Error("Invalid user data");
@@ -45,12 +40,7 @@ const authUser = asyncHandler(async (req, res) => {
 
   if (user) {
     generateToken(res, user._id);
-    res.status(201).json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-    });
+    res.status(201).json(user);
   } else {
     res.status(400);
     throw new Error("Invalid email, Register your credentials");

@@ -10,5 +10,453 @@
         "url": "http://localhost:5000/api",
         "description": "Development server"
       }
-    ]
+    ],
+    "paths": {
+        "/properties": {
+          "get": {
+            "description": "List all properties available in the platform",
+            "tags": ["Property"],
+            "responses": {
+              "200": {
+                "description": "Successfully fetched all properties",
+                "content": {
+                  "application/json": {
+                    "schema":{
+                      "$ref": "#/components/schemas/Property"
+                    }
+                  }
+                }
+              },
+              "500":{
+                "description": "Some server error"
+              }
+            }
+          },
+    
+          "post": {
+            "description": "Adds new property to the platform",
+            "tags": ["Property"],
+            "requestBody":{
+              "required": true,
+              "content": {
+                "application/json":{
+                  "schema":{
+                    "$ref": "#/components/schemas/Property"
+                  }
+                }
+              }
+            },
+            "responses": {
+              "201": {
+                "description": "Successfully created a property",
+                "content": {
+                  "application/json": {
+                    "schema":{
+                      "$ref": "#/components/schemas/Property"
+                    }
+                  }
+                }
+              },
+              "400":{
+                "description": "Property not created, Fill all fields"
+              },
+              "500":{
+                "description": "Some server error"
+              }
+            }
+          }
+        }, 
+
+        "/orders":{
+          "get": {
+            "description": "List all orders in the platform",
+            "tags": ["Order"],
+            "responses": {
+              "200": {
+                "description": "Successfully fetched all orders",
+                "content": {
+                  "application/json": {
+                    "schema":{
+                      "$ref": "#/components/schemas/Order"
+                    }
+                  }
+                }
+              },
+              "500":{
+                "description": "Some server error"
+              }
+            }
+          },
+          "post": {
+            "description": "Adds new property to the platform",
+            "tags": ["Order"],
+            "requestBody":{
+              "required": true,
+              "content": {
+                "application/json":{
+                  "schema":{
+                    "$ref": "#/components/schemas/Order"
+                  }
+                }
+              }
+            },
+            "responses": {
+              "201": {
+                "description": "Successfully adds a new Property",
+                "content": {
+                  "application/json": {
+                    "schema":{
+                      "$ref": "#/components/schemas/Order"
+                    }
+                  }
+                }
+              },
+              "500":{
+                "description": "Some server error"
+              }
+            }
+          }
+        }, 
+        "/orders/property":{
+            "get": {
+              "description": "List all users that matched the given property",
+              "tags": ["Order"],
+              "requestBody":{
+                "required": true,
+                "content": {
+                  "application/json":{
+                    "schema":{
+                        "type": "object",
+                        "properties": {
+                            "propertyId" :{
+                                "type": "string",
+                                "description": "The id of the property "
+                            }
+                        }
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {
+                  "description": "Successfully fetched all matched users",
+                  "content": {
+                    "application/json": {
+                        "schema":{
+                            "type": "object",
+                            "properties": {
+                                "Customer_Name" :{
+                                    "type": "string",
+                                    "description": "The name of the user"
+                                },
+                                "DOB" :{
+                                    "type": "string",
+                                    "description": "The date of birth of the user"
+                                },
+                                "Property_Name" :{
+                                    "type": "string",
+                                    "description": "The name of the property"
+                                },
+                                "Property_Description" :{
+                                    "type": "string",
+                                    "description": "The description of the property"
+                                },
+                                "Price" :{
+                                    "type": "number",
+                                    "description": "The price of the property"
+                                }
+                            }
+                        }
+                    }
+                  }
+                },
+                "500":{
+                    "description": "Some server error"
+                }
+              }
+            }
+        }, 
+        "/orders/renters":{
+            "get": {
+              "description": "List all renters with proposed propertyId for rent",
+              "tags": ["Order"],
+              "responses": {
+                "200": {
+                  "description": "Successfully fetched all renters",
+                  "content": {
+                    "application/json": {
+                        "schema":{
+                            "type": "object",
+                            "properties": {
+                                "name" :{
+                                    "type": "string",
+                                    "description": "The name of the renter"
+                                },
+                                "DOB" :{
+                                    "type": "string",
+                                    "description": "The date of birth of the renter"
+                                },
+                                "propertyId" :{
+                                    "type": "string",
+                                    "description": "The id of the property proposed for rental"
+                                }
+                            }
+                        }
+                    }
+                  }
+                },
+                "500":{
+                    "description": "Some server error"
+                }
+              }
+            }
+        }, 
+        "/orders/buyers":{
+            "get": {
+              "description": "List all buyers with proposed propertyId for sale",
+              "tags": ["Order"],
+              "responses": {
+                "200": {
+                  "description": "Successfully fetched all buyers",
+                  "content": {
+                    "application/json": {
+                        "schema":{
+                            "type": "object",
+                            "properties": {
+                                "name" :{
+                                    "type": "string",
+                                    "description": "The name of the buyer"
+                                },
+                                "DOB" :{
+                                    "type": "string",
+                                    "description": "The date of birth of the buyer"
+                                },
+                                "propertyId" :{
+                                    "type": "string",
+                                    "description": "The id of the property proposed for sale"
+                                }
+                            }
+                        }
+                    }
+                  }
+                },
+                "500":{
+                    "description": "Some server error"
+                }
+              }
+            }
+        }, 
+
+        "/users":{
+          "get": {
+            "description": "List all users available in the platform",
+            "tags": ["User"],
+            "responses": {
+              "200": {
+                "description": "Successfully fetched all users",
+                "content": {
+                  "application/json": {
+                    "schema":{
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                }
+              },
+              "500":{
+                "description": "Some server error"
+              }
+            }
+          },
+          "post": {
+            "description": "Adds new User to the platform",
+            "tags": ["User"],
+            "requestBody":{
+              "required": true,
+              "content": {
+                "application/json":{
+                  "schema":{
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            },
+            "responses": {
+              "201": {
+                "description": "Successfully Add a new User",
+                "content": {
+                  "application/json": {
+                    "schema":{
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                }
+              },
+              "400":{
+                "description": "User already Exist"
+              },
+              "500":{
+                "description": "Some server error"
+              }
+            }
+          }
+        },
+        "/users/auth":{
+            "post": {
+              "description": "Authenticate user",
+              "tags": ["User"],
+              "requestBody":{
+                "required": true,
+                "content": {
+                  "application/json":{
+                    "schema":{
+                        "type": "object",
+                        "properties": {
+                            "email" :{
+                                "type": "string",
+                                "description": "The email of the user"
+                            }
+                        }
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "201": {
+                  "description": "Successfully Add a new User",
+                  "content": {
+                    "application/json": {
+                        "schema":{
+                            "$ref": "#/components/schemas/User"
+                          }
+                    }
+                  }
+                },
+                "400":{
+                  "description": "Invalid email, Register your credentials"
+                },
+                "500":{
+                  "description": "Some server error"
+                }
+              }
+            }
+        },
+        "/users/logout":{
+            "post": {
+              "description": "Logout user",
+              "tags": ["User"],
+              "responses": {
+                "200": {
+                  "description": "User logged out"
+                },
+                "500":{
+                  "description": "Some server error"
+                }
+              }
+            }
+        }
+      },
+      "components": {
+        "schemas": {
+          "Property": {
+            "type": "object",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the property"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Brief description of the property"
+                },
+                "isTaken": {
+                  "type": "boolean",
+                  "description": "Status of the property"
+                },
+                "category": {
+                  "type": "string",
+                  "description": "This states if the property is either for sale or rent"
+                },
+                "location": {
+                  "type": "string",
+                  "description": "Location of the property"
+                },
+                "price": {
+                  "type": "integer",
+                  "description": "Price of the property"
+                }
+              },
+              "required": [
+                "name",
+                "description",
+                "isTaken",
+                "category",
+                "location",
+                "price"
+              ]
+            }
+          },
+          "Order": {
+            "type": "object",
+            "items": {
+              "type": "object",
+              "properties": {
+                "userId": {
+                  "type": "string",
+                  "description": "The id of the user"
+                },
+                "propertyId": {
+                  "type": "string",
+                  "description": "The id of the property"
+                },
+                "bookingType": {
+                  "type": "string",
+                  "description": "This is the category of the property which is either sale or rent"
+                }
+              },
+              "required": [
+                "userId",
+                "propertyId",
+                "bookingType"
+              ]
+            }
+          },
+          "User": {
+            "type": "object",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the user"
+                },
+                "dateOfBirth": {
+                  "type": "string",
+                  "description": "The date of birth of the user"
+                },
+                "location": {
+                  "type": "string",
+                  "description": "The location of the user"
+                },
+                "email": {
+                  "type": "string",
+                  "description": "The email of the user"
+                },
+                "role": {
+                  "type": "string",
+                  "description": "The role of the user which is either buyer or renter"
+                }
+              },
+              "required": [
+                "name",
+                "dateOfBirth",
+                "location",
+                "email",
+                "role"
+              ]
+            }
+          }
+        }
+      }
 }
