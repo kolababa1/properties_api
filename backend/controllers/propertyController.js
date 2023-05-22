@@ -13,6 +13,10 @@ const getProperties = asyncHandler(async (req, res) => {
 // @route   POST /api/properties
 const createProperty = asyncHandler(async (req, res) => {
   const { name, description, isTaken, category, location, price } = req.body;
+  if (!name || !location || !price) {
+    res.status(403);
+    throw new Error("All fields required");
+  }
 
   const property = await Property.create({
     name,

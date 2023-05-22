@@ -1,4 +1,6 @@
 import asyncHandler from "express-async-handler";
+import mongoose from "mongoose";
+
 import Order from "../models/orderModel.js";
 import Property from "../models/propertyModel.js";
 
@@ -8,6 +10,12 @@ import Property from "../models/propertyModel.js";
 const addOrder = asyncHandler(async (req, res) => {
   const { bookingType, propertyId } = req.body;
   const { _id: userId, role } = req.user;
+
+  //Validates fields
+  if (!bookingType || !propertyId || !userId) {
+    res.status(403);
+    throw new Error("All fields required");
+  }
 
   //Checks if the property Exists
   const propertyExist = await Property.findById({ _id: propertyId });
@@ -61,7 +69,6 @@ const addOrder = asyncHandler(async (req, res) => {
   } else {
     res.status(400);
     throw new Error("You are not eligible for this Transaction");
-    return;
   }
 });
 
@@ -72,12 +79,17 @@ const getOrderByRenters = asyncHandler(async (req, res) => {
     "userId",
     "name dateOfBirth"
   );
-  const orderDetails = orders.map((order) => ({
-    Name: order.userId.name,
-    DOB: order.userId.dateOfBirth,
-    PropertyId: order.propertyId,
-  }));
-  res.json(orderDetails);
+  if (orders) {
+    const orderDetails = orders.map((order) => ({
+      Name: order.userId.name,
+      DOB: order.userId.dateOfBirth,
+      PropertyId: order.propertyId,
+    }));
+    res.json(orderDetails);
+  } else {
+    res.status(404);
+    throw new Error("No Renters");
+  }
 });
 
 // @desc    Gets List of all Buyers
@@ -87,38 +99,69 @@ const getOrderByBuyers = asyncHandler(async (req, res) => {
     "userId",
     "name dateOfBirth"
   );
-  const orderDetails = orders.map((order) => ({
-    Name: order.userId.name,
-    DOB: order.userId.dateOfBirth,
-    PropertyId: order.propertyId,
-  }));
-  res.json(orderDetails);
+  if (orders) {
+    const orderDetails = orders.map((order) => ({
+      Name: order.userId.name,
+      DOB: order.userId.dateOfBirth,
+      PropertyId: order.propertyId,
+    }));
+    res.json(orderDetails);
+  } else {
+    res.status(404);
+    throw new Error("No Buyers");
+  }
 });
 
-// @desc    Gets Orders by Property
-// @route   GET /api/orders/property
+// @desc    Returns Orders by Property
+// @route   POST /api/orders/property
 const getOrderByProperty = asyncHandler(async (req, res) => {
   const { propertyId } = req.body;
+
+  if (!propertyId) {
+    res.status(403);
+    throw new Error("Valid property Id is required");
+  }
+  //check if its a valid mongoDB id
+  if (!mongoose.Types.ObjectId.isValid(propertyId)) {
+    res.status(403);
+    throw new Error("Valid property Id is required");
+  }
+
+  const checkOrder = await Order.find({ propertyId });
+  if (!checkOrder) {
+    res.status(404);
+    throw new Error("No match for this property");
+  }
 
   const orders = await Order.find({ propertyId })
     .populate("userId")
     .populate("propertyId");
-  const propertyDetails = orders.map((order) => ({
-    Customer_Name: order.userId.name,
-    DOB: order.userId.dateOfBirth,
-    Property_Name: order.propertyId.name,
-    Property_Description: order.propertyId.description,
-    Price: order.propertyId.price,
-  }));
-  res.json(propertyDetails);
+
+  if (orders) {
+    const propertyDetails = orders.map((order) => ({
+      Customer_Name: order.userId.name,
+      DOB: order.userId.dateOfBirth,
+      Property_Name: order.propertyId.name,
+      Property_Description: order.propertyId.description,
+      Price: order.propertyId.price,
+    }));
+    res.json(propertyDetails);
+  } else {
+    res.status(404);
+    throw new Error("No match for this property");
+  }
 });
 
 // @desc    Get all orders
 // @route   GET /api/orders
 const getOrders = asyncHandler(async (req, res) => {
   const orders = await Order.find({}).populate("userId").populate("propertyId");
-
-  res.json(orders);
+  if (orders) {
+    res.json(orders);
+  } else {
+    res.status(404);
+    throw new Error("No Order Yet");
+  }
 });
 
 export {

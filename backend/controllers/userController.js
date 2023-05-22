@@ -6,6 +6,10 @@ import generateToken from "../utils/generateToken.js";
 // route POST /api/users
 const registerUser = asyncHandler(async (req, res) => {
   const { name, dateOfBirth, location, email, role } = req.body;
+  if (!name || !dateOfBirth || !location || !email) {
+    res.status(403);
+    throw new Error("All fields required");
+  }
 
   const userExist = await User.findOne({ email });
 
@@ -36,6 +40,11 @@ const registerUser = asyncHandler(async (req, res) => {
 const authUser = asyncHandler(async (req, res) => {
   const { email } = req.body;
 
+  if (!email) {
+    res.status(403);
+    throw new Error("Please Input your Email");
+  }
+
   const user = await User.findOne({ email });
 
   if (user) {
@@ -58,4 +67,16 @@ const logoutUser = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "User logged out" });
 });
 
-export { authUser, registerUser, logoutUser };
+// @desc Get all user
+// route GET /api/users/
+const getAllUser = asyncHandler(async (req, res) => {
+  const user = await User.find({});
+  if (user) {
+    res.status(200).json(user);
+  } else {
+    res.status(404);
+    throw new Error("No User Yet");
+  }
+});
+
+export { authUser, registerUser, logoutUser, getAllUser };

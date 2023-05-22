@@ -27,14 +27,25 @@
                   }
                 }
               },
+              "404":{
+                "description": "No Property Yet"
+            },
               "500":{
                 "description": "Some server error"
               }
             }
-          },
-    
+          },         
           "post": {
             "description": "Adds new property to the platform",
+            "parameters": [
+                {
+                    "in": "cookie",
+                    "name": "jwt",
+                    "schema": {
+                      "type": "string"
+                    }
+                }
+            ],
             "tags": ["Property"],
             "requestBody":{
               "required": true,
@@ -60,6 +71,9 @@
               "400":{
                 "description": "Property not created, Fill all fields"
               },
+              "403":{
+                "description": "All fields required"
+              },
               "500":{
                 "description": "Some server error"
               }
@@ -82,6 +96,9 @@
                   }
                 }
               },
+              "404":{
+                "description": "No Orders Yet"
+            },
               "500":{
                 "description": "Some server error"
               }
@@ -111,6 +128,9 @@
                   }
                 }
               },
+              "403":{
+                "description": "All fields required"
+              },
               "500":{
                 "description": "Some server error"
               }
@@ -118,7 +138,7 @@
           }
         }, 
         "/orders/property":{
-            "get": {
+            "post": {
               "description": "List all users that matched the given property",
               "tags": ["Order"],
               "requestBody":{
@@ -151,6 +171,7 @@
                                 },
                                 "DOB" :{
                                     "type": "string",
+                                    "format": "date",
                                     "description": "The date of birth of the user"
                                 },
                                 "Property_Name" :{
@@ -169,6 +190,12 @@
                         }
                     }
                   }
+                },
+                "403":{
+                    "description": "Property Id required"
+                  },
+                "404":{
+                    "description": "No match for this property"
                 },
                 "500":{
                     "description": "Some server error"
@@ -194,6 +221,7 @@
                                 },
                                 "DOB" :{
                                     "type": "string",
+                                    "format": "date",
                                     "description": "The date of birth of the renter"
                                 },
                                 "propertyId" :{
@@ -205,6 +233,9 @@
                     }
                   }
                 },
+                "404":{
+                    "description": "No Renters"
+                  },
                 "500":{
                     "description": "Some server error"
                 }
@@ -229,6 +260,7 @@
                                 },
                                 "DOB" :{
                                     "type": "string",
+                                    "format": "date",
                                     "description": "The date of birth of the buyer"
                                 },
                                 "propertyId" :{
@@ -240,6 +272,9 @@
                     }
                   }
                 },
+                "404":{
+                    "description": "No Buyers"
+                  },
                 "500":{
                     "description": "Some server error"
                 }
@@ -262,6 +297,9 @@
                   }
                 }
               },
+              "404":{
+                "description": "No Users Yet"
+            },
               "500":{
                 "description": "Some server error"
               }
@@ -293,6 +331,9 @@
               },
               "400":{
                 "description": "User already Exist"
+              },
+              "403":{
+                "description": "All fields required"
               },
               "500":{
                 "description": "Some server error"
@@ -334,6 +375,9 @@
                 "400":{
                   "description": "Invalid email, Register your credentials"
                 },
+                "403":{
+                    "description": "Input your email"
+                  },
                 "500":{
                   "description": "Some server error"
                 }
@@ -433,6 +477,7 @@
                 },
                 "dateOfBirth": {
                   "type": "string",
+                  "format": "date",
                   "description": "The date of birth of the user"
                 },
                 "location": {

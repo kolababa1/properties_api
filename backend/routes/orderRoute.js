@@ -12,10 +12,10 @@ import {
 const router = express.Router();
 
 router.get("/", getOrders);
-router.get("/property", getOrderByProperty);
 router.get("/renters", getOrderByRenters);
 router.get("/buyers", getOrderByBuyers);
 
 router.post("/", protect, addOrder);
+router.post("/property", getOrderByProperty);
 
 export default router;
