@@ -1,0 +1,14 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+      "title": "properties_api",
+      "description": "API for linking users and properties",
+      "version": "1.0.0"
+    },
+    "servers": [
+      {
+        "url": "http://localhost:5000/api",
+        "description": "Development server"
+      }
+    ]
+}
