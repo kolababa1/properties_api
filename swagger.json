@@ -398,13 +398,11 @@
               }
             }
         }
-      },
-      "components": {
+    },
+    "components": {
         "schemas": {
           "Property": {
             "type": "object",
-            "items": {
-              "type": "object",
               "properties": {
                 "name": {
                   "type": "string",
@@ -439,12 +437,9 @@
                 "location",
                 "price"
               ]
-            }
-          },
+            },
           "Order": {
-            "type": "object",
-            "items": {
-              "type": "object",
+            "type": "object",           
               "properties": {
                 "userId": {
                   "type": "string",
@@ -464,12 +459,9 @@
                 "propertyId",
                 "bookingType"
               ]
-            }
-          },
+            },
           "User": {
             "type": "object",
-            "items": {
-              "type": "object",
               "properties": {
                 "name": {
                   "type": "string",
@@ -501,7 +493,6 @@
                 "role"
               ]
             }
-          }
         }
-      }
+    }
 }
