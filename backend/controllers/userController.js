@@ -18,9 +18,11 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error("User already exists");
   }
 
+  const DOB = new Date(dateOfBirth);
+
   const user = await User.create({
     name,
-    dateOfBirth,
+    dateOfBirth: DOB,
     location,
     email,
     role,
