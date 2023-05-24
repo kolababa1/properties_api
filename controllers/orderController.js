@@ -1,4 +1,4 @@
-import asyncHandler from "../middleware/asyncHandler";
+import asyncHandler from "../middleware/asyncHandler.js";
 import mongoose from "mongoose";
 
 import Order from "../models/orderModel.js";
@@ -139,7 +139,7 @@ const getOrderByProperty = asyncHandler(async (req, res) => {
   }
 
   const checkOrder = await Order.find({ propertyId });
-  if (!checkOrder) {
+  if (!checkOrder || checkOrder.length === 0) {
     res.status(404);
     throw new Error("No match for this property");
   }

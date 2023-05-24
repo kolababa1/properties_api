@@ -1,6 +1,6 @@
 import User from "../models/userModel.js";
-import asyncHandler from "../middleware/asyncHandler";
-import generateToken from "../utils/generateToken.js";
+import asyncHandler from "../middleware/asyncHandler.js";
+// import generateToken from "../utils/generateToken.js";
 
 // @desc Register a new user
 // route POST /api/users

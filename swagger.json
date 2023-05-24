@@ -429,6 +429,7 @@
                 },
                 "category": {
                   "type": "string",
+                  "enum": ["rent","sale"],
                   "description": "This states if the property is either for sale or rent"
                 },
                 "location": {
@@ -493,6 +494,7 @@
                 },
                 "role": {
                   "type": "string",
+                  "enum": ["renter","buyer"],
                   "description": "The role of the user which is either buyer or renter"
                 }
               },

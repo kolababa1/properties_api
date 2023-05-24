@@ -6,9 +6,9 @@ dotenv.config();
 
 // import cookieParser from "cookie-parser";
 
-import swaggerUi from "swagger-ui-express";
-import swaggerDocument from "../swagger.json" assert { type: "json" };
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+// import swaggerUi from "swagger-ui-express";
+// import swaggerDocument from "./swagger.json" assert { type: "json" };
+// app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 import connectDB from "./config/db.js";
 connectDB();
