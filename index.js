@@ -21,7 +21,9 @@ app.use(express.urlencoded({ extended: true }));
 import userRoute from "./routes/userRoute.js";
 import propertyRoute from "./routes/propertyRoute.js";
 import orderRoute from "./routes/orderRoute.js";
-
+app.get("/", (req, res) => {
+  res.status(200).json({ message: "properties_API" });
+});
 app.use("/api/users", userRoute);
 app.use("/api/properties", propertyRoute);
 app.use("/api/orders", orderRoute);
