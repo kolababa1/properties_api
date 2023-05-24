@@ -4,7 +4,7 @@ const app = express();
 import dotenv from "dotenv";
 dotenv.config();
 
-import cookieParser from "cookie-parser";
+// import cookieParser from "cookie-parser";
 
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "../swagger.json" assert { type: "json" };
@@ -15,7 +15,7 @@ connectDB();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
+// app.use(cookieParser());
 
 //Routes
 import userRoute from "./routes/userRoute.js";

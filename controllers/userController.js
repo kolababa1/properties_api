@@ -1,5 +1,5 @@
 import User from "../models/userModel.js";
-import asyncHandler from "express-async-handler";
+import asyncHandler from "../middleware/asyncHandler";
 import generateToken from "../utils/generateToken.js";
 
 // @desc Register a new user
@@ -27,7 +27,7 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (user) {
-    generateToken(res, user._id);
+    // generateToken(res, user._id);
     res.status(201).json(user);
   } else {
     res.status(400);
@@ -48,7 +48,7 @@ const authUser = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email });
 
   if (user) {
-    generateToken(res, user._id);
+    // generateToken(res, user._id);
     res.status(201).json(user);
   } else {
     res.status(400);
@@ -59,10 +59,10 @@ const authUser = asyncHandler(async (req, res) => {
 // @desc Logout user
 // route POST /api/users/logout
 const logoutUser = asyncHandler(async (req, res) => {
-  res.cookie("jwt", "", {
-    httpOnly: true,
-    expires: new Date(0),
-  });
+  // res.cookie("jwt", "", {
+  //   httpOnly: true,
+  //   expires: new Date(0),
+  // });
 
   res.status(200).json({ message: "User logged out" });
 });

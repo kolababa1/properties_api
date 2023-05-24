@@ -15,7 +15,7 @@ router.get("/", getOrders);
 router.get("/renters", getOrderByRenters);
 router.get("/buyers", getOrderByBuyers);
 
-router.post("/", protect, addOrder);
+router.post("/", addOrder);
 router.post("/property", getOrderByProperty);
 
 export default router;

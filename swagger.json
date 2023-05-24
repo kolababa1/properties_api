@@ -37,15 +37,6 @@
           },         
           "post": {
             "description": "Adds new property to the platform",
-            "parameters": [
-                {
-                    "in": "cookie",
-                    "name": "jwt",
-                    "schema": {
-                      "type": "string"
-                    }
-                }
-            ],
             "tags": ["Property"],
             "requestBody":{
               "required": true,
@@ -105,14 +96,28 @@
             }
           },
           "post": {
-            "description": "Adds new property to the platform",
+            "description": "Adds new order to the platform",
             "tags": ["Order"],
             "requestBody":{
               "required": true,
               "content": {
                 "application/json":{
                   "schema":{
-                    "$ref": "#/components/schemas/Order"
+                    "type": "object",
+                    "properties": {
+                        "bookingType" :{
+                            "type": "string",
+                            "description": "The type of Order, either rent or sale"
+                        },
+                        "propertyId" :{
+                          "type": "string",
+                          "description": "The Id of the property"
+                      },
+                      "email" :{
+                        "type": "string",
+                        "description": "The email of the user"
+                      }
+                    }
                   }
                 }
               }
@@ -128,8 +133,14 @@
                   }
                 }
               },
+              "400":{
+                "description": "Invalid email, register you credentials"
+              },
               "403":{
                 "description": "All fields required"
+              },
+              "404":{
+                "description": "No such property"
               },
               "500":{
                 "description": "Some server error"

@@ -1,4 +1,4 @@
-import asyncHandler from "express-async-handler";
+import asyncHandler from "../middleware/asyncHandler";
 
 import Property from "../models/propertyModel.js";
 

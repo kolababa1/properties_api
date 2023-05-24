@@ -1,24 +1,35 @@
-import asyncHandler from "express-async-handler";
+import asyncHandler from "../middleware/asyncHandler";
 import mongoose from "mongoose";
 
 import Order from "../models/orderModel.js";
 import Property from "../models/propertyModel.js";
+import User from "../models/userModel.js";
 
 // @desc    Create new order
 // @route   POST /api/orders
 // @access  Private
 const addOrder = asyncHandler(async (req, res) => {
-  const { bookingType, propertyId } = req.body;
-  const { _id: userId, role } = req.user;
+  const { bookingType, propertyId, email } = req.body;
 
   //Validates fields
-  if (!bookingType || !propertyId || !userId) {
+  if (!bookingType || !propertyId || !email) {
     res.status(403);
     throw new Error("All fields required");
   }
 
   //Checks if the property Exists
   const propertyExist = await Property.findById({ _id: propertyId });
+  if (!propertyExist) {
+    res.status(404);
+    throw new Error("No Such Property");
+  }
+  //Checks if the user Exists
+  const userExist = await User.findById({ email });
+  if (!userExist) {
+    res.status(404);
+    throw new Error("Invalid email, register you credentials");
+  }
+  const { _id: userId, role } = userExist;
 
   //Prevents duplicate order
   const orderExist = await Order.findOne({ userId, propertyId });
