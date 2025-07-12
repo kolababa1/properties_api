@@ -43,7 +43,7 @@ const createShipment = async (req, res) => {
       items: itemsWithNumbers,
       packagingWeight: packaging,
       totalWeight,
-      username: req.user.username,
+      username: "anonymous",
     });
 
     await shipment.save();

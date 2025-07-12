@@ -1,12 +1,13 @@
 import express from "express";
 const router = express.Router();
 
-import auth from "../middleware/auth.js";
-import authorize from "../middleware/authorize.js";
+// import auth from "../middleware/auth.js";
+// import authorize from "../middleware/authorize.js";
 import { createShipment, getAllShipments } from "../controllers/shipments.js";
 
 // Create shipment
-router.post("/", auth, authorize("staff", "admin"), createShipment);
+// router.post("/", auth, authorize("staff", "admin"), createShipment);
+router.post("/", createShipment);
 
 // Get all shipments with filters, pagination, and customer filter
 router.get("/", getAllShipments);
