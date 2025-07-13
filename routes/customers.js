@@ -24,7 +24,7 @@ router.get("/byphone", async (req, res) => {
   try {
     const customer = await Customer.findOne({ phone: req.query.phone });
     if (!customer)
-      return res.status(404).json({ message: "Customer not found" });
+      return res.status(404).json({ message: "Customer not found " });
     res.json(customer);
   } catch (err) {
     res.status(500).json({ message: "Server error" });

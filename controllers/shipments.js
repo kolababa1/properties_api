@@ -22,18 +22,18 @@ const createShipment = async (req, res) => {
 
     // Calculate total item weight
     const itemsWithNumbers = items.map((i) => ({
+      itemName: i.itemName,
       weight: Number(i.weight),
       quantity: Number(i.quantity),
     }));
     const totalItemWeight = itemsWithNumbers.reduce(
-      (sum, i) => sum + i.weight * i.quantity,
+      (sum, i) => sum + i.weight,
       0
     );
 
     if (totalItemWeight > totalWeight)
       return res.status(401).json({
-        message:
-          "Total weight must be greater than sum of all the items weight",
+        message: `Total weight (${totalWeight}) must be greater than sum of all the items weight (${totalItemWeight})`,
       });
     const packaging = Number(totalWeight - totalItemWeight).toFixed(2) || 0;
 
