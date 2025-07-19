@@ -107,6 +107,19 @@ const getAllShipments = async (req, res) => {
   }
 };
 
+const getAShipment = async (req, res) => {
+  try {
+    const shipment = await Shipment.findById(req.params.id)
+      .populate("sender")
+      .populate("receiver");
+    if (!shipment)
+      return res.status(404).json({ message: "Shipment not found" });
+    res.json(shipment);
+  } catch {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 // Helper to create/get customer by phone or create new
 async function findOrCreateCustomer(data) {
   if (!data.phone) throw new Error("Please provide customer's phone number");
@@ -126,4 +139,4 @@ async function findOrCreateCustomer(data) {
   }
   return customer;
 }
-export { createShipment, getAllShipments };
+export { createShipment, getAllShipments, getAShipment };
