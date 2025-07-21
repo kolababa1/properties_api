@@ -1,11 +1,11 @@
 import express from "express";
 const router = express.Router();
-import User from "../models/User.js";
+import Users from "../models/User.js";
 
 // Get a User
 router.get("/:id", async (req, res) => {
   try {
-    const staff = await User.findOne({ phone: req.query.phone });
+    const staff = await Users.findOne({ phone: req.query.phone });
     if (!staff) return res.status(404).json({ message: "staff not found " });
     res.json(staff);
   } catch (err) {
@@ -23,7 +23,7 @@ router.get("/", async (req, res) => {
     //   staff.find().skip(skip).limit(limit).sort({ name: 1 }),
     //   staff.countDocuments(),
     // ]);
-    const staffs = await User.find();
+    const staffs = await Users.find();
     res.json({
       data: staffs,
       //   currentPage: page,
