@@ -21,6 +21,8 @@ const shipmentSchema = new mongoose.Schema(
     items: [itemSchema],
     totalWeight: Number,
     packagingWeight: { type: Number, default: 0 },
+    rate: Number,
+    totalAmount: Number,
     username: String,
     trackingId: String,
     receivedDate: { type: Date, default: new Date() },

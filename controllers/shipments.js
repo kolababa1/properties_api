@@ -4,7 +4,7 @@ import Customer from "../models/Customer.js";
 const createShipment = async (req, res) => {
   try {
     // Validating input
-    const { sender, receiver, items, totalWeight } = req.body;
+    const { sender, receiver, items, totalWeight, rate } = req.body;
     if (!sender)
       return res.status(400).json({ message: "Please provide Sender details" });
     if (!receiver)
@@ -15,6 +15,7 @@ const createShipment = async (req, res) => {
       return res.status(400).json({ message: "Please provide Items details" });
     if (!totalWeight)
       return res.status(400).json({ message: "Please provide Total Weight" });
+    if (!rate) return res.status(400).json({ message: "Please provide Rate" });
 
     // Find or create customers
     const senderDoc = await findOrCreateCustomer(sender);
@@ -36,13 +37,15 @@ const createShipment = async (req, res) => {
         message: `Total weight (${totalWeight}) must be greater than sum of all the items weight (${totalItemWeight})`,
       });
     const packaging = Number(totalWeight - totalItemWeight).toFixed(2) || 0;
-
+    const totalAmount = (rate * totalWeight).toFixed(2);
     const shipment = new Shipment({
       sender: senderDoc._id,
       receiver: receiverDoc._id,
       items: itemsWithNumbers,
       packagingWeight: packaging,
       totalWeight,
+      rate,
+      totalAmount,
       username: "anonymous",
     });
 
