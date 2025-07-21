@@ -26,8 +26,16 @@ const shipmentSchema = new mongoose.Schema(
     username: String,
     trackingId: String,
     receivedDate: { type: Date, default: new Date() },
-    shippingDate: Date,
-    pickupDate: Date,
+    shippingDate: { type: Date, default: null },
+    pickupDate: { type: Date, default: null },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
+    deletedAt: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true }
 );
