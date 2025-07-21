@@ -25,6 +25,7 @@ import userRoute from "./routes/userRoute.js";
 import propertyRoute from "./routes/propertyRoute.js";
 import orderRoute from "./routes/orderRoute.js";
 
+import staffRoutes from "./routes/staffRoute.js";
 import authRoutes from "./routes/auth.js";
 import shipmentRoutes from "./routes/shipments.js";
 import customerRoutes from "./routes/customers.js";
@@ -36,6 +37,7 @@ app.use("/api/users", userRoute);
 app.use("/api/properties", propertyRoute);
 app.use("/api/orders", orderRoute);
 
+app.use("/api/staff", staffRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/shipments", shipmentRoutes);
 app.use("/api/customers", customerRoutes);
