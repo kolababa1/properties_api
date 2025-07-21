@@ -20,8 +20,18 @@ router.get("/:id", getAShipment);
 // Get all shipments with filters, pagination, and customer filter
 router.get("/", getAllShipments);
 
-router.delete("/:id", softDeleteShipmentsById);
+router.delete(
+  "/:id",
+  auth,
+  authorize("staff", "admin"),
+  softDeleteShipmentsById
+);
 
-router.delete("/", softDeleteMultipleShipments);
+router.delete(
+  "/",
+  auth,
+  authorize("staff", "admin"),
+  softDeleteMultipleShipments
+);
 
 export default router;
