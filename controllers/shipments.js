@@ -46,7 +46,7 @@ const createShipment = async (req, res) => {
       totalWeight,
       rate,
       totalAmount,
-      username: "anonymous",
+      username: req.user.username,
     });
 
     await shipment.save();
@@ -59,6 +59,76 @@ const createShipment = async (req, res) => {
   }
 };
 
+const softDeleteMultipleShipments = async (req, res) => {
+  try {
+    const { ids } = req.body;
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({
+        status: "fail",
+        message: "Please provide an array of Ids to soft delete.",
+      });
+    }
+    const result = await Shipment.updateMany(
+      {
+        _id: { $in: ids },
+        isDeleted: false,
+      },
+      {
+        $set: {
+          isDeleted: true,
+          deletedAt: new Date(),
+        },
+      }
+    );
+    if (result.matchedCount === 0) {
+      return res.status(404).json({
+        status: "fail",
+        message: "No active shipments found with the provided Ids.",
+      });
+    }
+
+    res.status(200).json({
+      status: "success",
+      messsage: `${result.modifiedCount} shipment(s) soft-deleted successfully.`,
+      matchedCount: result.matchedCount,
+      modifiedCount: result.modifiedCount,
+    });
+  } catch (error) {
+    console.error("Error soft-deleted multiple shipments:", error);
+    res.status(500).json({
+      status: "error",
+      message: "An error occurred while soft-deleting shipments",
+      error: error.message,
+    });
+  }
+};
+
+const softDeleteShipmentsById = async (req, res) => {
+  try {
+    const shipment = await Shipment.findOneAndUpdate(
+      { _id: req.params.id, isDeleted: false },
+      { $set: { isDeleted: true, dele: new Date() } },
+      { new: true }
+    );
+    if (!shipment) {
+      return res
+        .status(404)
+        .json({ message: "Shipment not found or already deleted." });
+    }
+    res.status(200).json({
+      status: "success",
+      message: `Shipment soft-deleted successfully.`,
+      data: shipment,
+    });
+  } catch (error) {
+    console.error();
+    res.status(500).json({
+      status: "error",
+      message: "An error occurred while soft-deleting shipment.",
+      error: error.message,
+    });
+  }
+};
 const getAllShipments = async (req, res) => {
   try {
     const { startDate, endDate, page = 1, limit = 10, customer } = req.query;
