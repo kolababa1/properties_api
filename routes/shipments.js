@@ -5,7 +5,8 @@ import auth from "../middleware/auth.js";
 import authorize from "../middleware/authorize.js";
 import {
   createShipment,
-  getAllShipments,
+  // getAllShipments,
+  getShipments,
   getAShipment,
   softDeleteShipmentsById,
   softDeleteMultipleShipments,
@@ -18,7 +19,7 @@ router.post("/", auth, authorize("staff", "admin"), createShipment);
 router.get("/:id", getAShipment);
 
 // Get all shipments with filters, pagination, and customer filter
-router.get("/", getAllShipments);
+router.get("/", getShipments);
 
 router.delete(
   "/:id",
