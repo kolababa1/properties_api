@@ -132,35 +132,56 @@ const softDeleteShipmentsById = async (req, res) => {
 
 const getAllShipments = async (req, res) => {
   try {
+    // Extract query parameters with default values for page and limit
     const { startDate, endDate, page = 1, limit = 10, customer } = req.query;
-    const skip = (page - 1) * limit;
 
-    // Build date filter
+    // Calculate the number of documents to skip for pagination
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    // Build date filter if startDate or endDate are provided
     const dateFilter = {};
-    if (startDate) dateFilter.$gte = new Date(startDate);
-    if (endDate) dateFilter.$lte = new Date(endDate);
+    if (startDate) {
+      // Ensure startDate is a valid Date object
+      dateFilter.$gte = new Date(startDate);
+    }
+    if (endDate) {
+      // Ensure endDate is a valid Date object
+      dateFilter.$lte = new Date(endDate);
+    }
 
     // Build base query
     const query = { isDeleted: false };
     if (startDate || endDate) query.createdAt = dateFilter;
 
-    // If customer filter provided, find matching customers by name or phone
+    // If a 'customer' search term is provided, find matching customers and add their IDs to the query
     if (customer) {
+      // Find customers whose name or phone number matches the 'customer' search term (case-insensitive)
       const customers = await Customer.find({
         $or: [
-          { name: new RegExp(customer, "i") },
-          { phone: new RegExp(customer, "i") },
+          { name: new RegExp(customer, "i") }, // Case-insensitive regex for name
+          { phone: new RegExp(customer, "i") }, // Case-insensitive regex for phone
         ],
-      }).select("_id");
+      }).select("_id"); // Select only the _id field
+
+      // Extract customer IDs from the found customers
       const customerIds = customers.map((c) => c._id);
-      query.$or = [
-        { sender: { $in: customerIds } },
-        { receiver: { $in: customerIds } },
-      ];
+
+      // Add conditions to the query to find shipments where sender or receiver is one of the found user IDs
+      // This uses $and to combine with existing query conditions (like isDeleted: false)
+      query.$and = [
+        query.$and || {}, // Preserve existing $and conditions if any
+        {
+          $or: [
+            { sender: { $in: customerIds } },
+            { receiver: { $in: customerIds } },
+          ],
+        },
+      ].filter(Boolean); // Remove empty objects if no prior $and existed
     }
 
+    // Execute both the shipment retrieval and total count queries concurrently
     const [shipments, total] = await Promise.all([
-      Shipment.find(query)
+      Shipment.find({ query, isDeleted: false })
         .populate("sender")
         .populate("receiver")
         .skip(skip)
@@ -169,6 +190,7 @@ const getAllShipments = async (req, res) => {
       Shipment.countDocuments(query),
     ]);
 
+    // Send the response with shipment data and pagination metadata
     res.json({
       data: shipments,
       currentPage: Number(page),
@@ -176,7 +198,9 @@ const getAllShipments = async (req, res) => {
       totalItems: total,
     });
   } catch (err) {
-    console.error(err);
+    // Log the error for debugging purposes
+    console.error("Error fetching shipments:", err);
+    // Send a 500 status code and a generic error message to the client
     res.status(500).json({ message: "Server error" });
   }
 };
