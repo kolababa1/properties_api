@@ -129,6 +129,7 @@ const softDeleteShipmentsById = async (req, res) => {
     });
   }
 };
+
 const getAllShipments = async (req, res) => {
   try {
     const { startDate, endDate, page = 1, limit = 10, customer } = req.query;
@@ -159,7 +160,7 @@ const getAllShipments = async (req, res) => {
     }
 
     const [shipments, total] = await Promise.all([
-      Shipment.find(query)
+      Shipment.find({ query, isDeleted: false })
         .populate("sender")
         .populate("receiver")
         .skip(skip)
@@ -182,7 +183,10 @@ const getAllShipments = async (req, res) => {
 
 const getAShipment = async (req, res) => {
   try {
-    const shipment = await Shipment.findById(req.params.id)
+    const shipment = await Shipment.findById({
+      _id: req.params.id,
+      isDeleted: false,
+    })
       .populate("sender")
       .populate("receiver");
     if (!shipment)
