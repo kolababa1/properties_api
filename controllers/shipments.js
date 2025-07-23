@@ -103,7 +103,8 @@ const softDeleteMultipleShipments = async (req, res) => {
   }
 };
 
-const getShipments = async (req, res) => {
+// Get All Shipments
+const getAllShipments = async (req, res) => {
   try {
     const shipments = await Shipment.find();
 
@@ -117,6 +118,7 @@ const getShipments = async (req, res) => {
       .json({ message: `Error occurred while fecthing shipments` });
   }
 };
+
 const softDeleteShipmentsById = async (req, res) => {
   try {
     const shipment = await Shipment.findOneAndUpdate(
@@ -144,56 +146,60 @@ const softDeleteShipmentsById = async (req, res) => {
   }
 };
 
-// const getAllShipments = async (req, res) => {
-//   try {
-//     const { startDate, endDate, page = 1, limit = 10, customer } = req.query;
-//     const skip = (page - 1) * limit;
+// Get unndeleted Shipments
+const getShipments = async (req, res) => {
+  try {
+    const { startDate, endDate, page = 1, limit = 10, customer } = req.query;
+    const skip = (page - 1) * limit;
 
-//     // Build date filter
-//     const dateFilter = {};
-//     if (startDate) dateFilter.$gte = new Date(startDate);
-//     if (endDate) dateFilter.$lte = new Date(endDate);
+    // Build date filter
+    const dateFilter = {};
+    if (startDate) dateFilter.$gte = new Date(startDate);
+    if (endDate) dateFilter.$lte = new Date(endDate);
 
-//     // Build base query
-//     const query = { isDeleted: false };
-//     if (startDate || endDate) query.createdAt = dateFilter;
+    // Build base query
+    const query = { isDeleted: false };
+    if (startDate || endDate) query.createdAt = dateFilter;
 
-//     // If a 'customer' search term is provided, find matching customers and add their IDs to the query
-//     if (customer) {
-//       const customers = await Customer.find({
-//         $or: [
-//           { name: new RegExp(customer, "i") },
-//           { phone: new RegExp(customer, "i") },
-//         ],
-//       }).select("_id");
-//       const customerIds = customers.map((c) => c._id);
-//       query.$or = [
-//         { sender: { $in: customerIds } },
-//         { receiver: { $in: customerIds } },
-//       ];
-//     }
+    // If a 'customer' search term is provided, find matching customers and add their IDs to the query
+    if (customer) {
+      const customers = await Customer.find({
+        $or: [
+          { name: new RegExp(customer, "i") },
+          { phone: new RegExp(customer, "i") },
+        ],
+      }).select("_id");
+      const customerIds = customers.map((c) => c._id);
+      query.$or = [
+        { sender: { $in: customerIds } },
+        { receiver: { $in: customerIds } },
+      ];
+    }
 
-//     const [shipments, total] = await Promise.all([
-//       Shipment.find(query)
-//         .populate("sender")
-//         .populate("receiver")
-//         .skip(skip)
-//         .limit(parseInt(limit))
-//         .sort({ createdAt: -1 }),
-//       Shipment.countDocuments(query),
-//     ]);
+    const [shipments, total] = await Promise.all([
+      Shipment.find(query)
+        .populate("sender")
+        .populate("receiver")
+        .skip(skip)
+        .limit(parseInt(limit))
+        .sort({ createdAt: -1 }),
+      Shipment.countDocuments(query),
+    ]);
 
-//     res.json({
-//       data: shipments,
-//       currentPage: Number(page),
-//       totalPages: Math.ceil(total / limit),
-//       totalItems: total,
-//     });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: "Server error" });
-//   }
-// };
+    res.json({
+      data: shipments,
+      currentPage: Number(page),
+      totalPages: Math.ceil(total / limit),
+      totalItems: total,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      data: err,
+      message: "Server error",
+    });
+  }
+};
 
 const getAShipment = async (req, res) => {
   try {
@@ -233,7 +239,7 @@ async function findOrCreateCustomer(data) {
 export {
   createShipment,
   getShipments,
-  // getAllShipments,
+  getAllShipments,
   getAShipment,
   softDeleteShipmentsById,
   softDeleteMultipleShipments,
