@@ -8,6 +8,7 @@ import {
   getAllShipments,
   getShipments,
   getAShipment,
+  updateShipments,
   softDeleteShipmentsById,
   softDeleteMultipleShipments,
 } from "../controllers/shipments.js";
@@ -23,6 +24,9 @@ router.get("/:id", getAShipment);
 
 // Get Undeleted Shipments
 router.get("/", getShipments);
+
+// Update Shipment
+router.put("/", auth, authorize("staff", "admin"), updateShipments);
 
 router.delete(
   "/:id",

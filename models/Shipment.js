@@ -36,6 +36,14 @@ const shipmentSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    deletedBy: {
+      type: String,
+      default: null,
+    },
+    updatedBy: {
+      type: String,
+      default: null,
+    },
   },
   { timestamps: true }
 );
