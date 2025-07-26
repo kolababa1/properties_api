@@ -79,7 +79,6 @@ const softDeleteMultipleShipments = async (req, res) => {
         $set: {
           isDeleted: true,
           deletedAt: new Date(),
-          deletedBy: req.user.username,
         },
       }
     );
@@ -109,18 +108,11 @@ const softDeleteMultipleShipments = async (req, res) => {
 // Get All Shipments
 const getAllShipments = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
-    const [shipments, total] = await Promise.all([
-      Shipment.find().skip(skip).limit(limit).sort({ name: 1 }),
-      Shipment.countDocuments(),
-    ]);
-    res.json({
+    const shipments = await Shipment.find();
+
+    res.status(200).json({
       data: shipments,
-      currentPage: page,
-      totalPages: Math.ceil(total / limit),
-      totalItems: total,
+      message: `Shipments fetched successfully`,
     });
   } catch (error) {
     res
@@ -134,13 +126,7 @@ const softDeleteShipmentsById = async (req, res) => {
   try {
     const shipment = await Shipment.findOneAndUpdate(
       { _id: req.params.id, isDeleted: false },
-      {
-        $set: {
-          isDeleted: true,
-          dele: new Date(),
-          deletedBy: req.user.username,
-        },
-      },
+      { $set: { isDeleted: true, dele: new Date() } },
       { new: true }
     );
     if (!shipment) {
@@ -235,7 +221,6 @@ const getAShipment = async (req, res) => {
   }
 };
 
-// Update Multiple Shipments
 const updateShipments = async (req, res) => {
   try {
     const { ids, updates } = req.body;
@@ -261,7 +246,7 @@ const updateShipments = async (req, res) => {
   } catch (error) {
     console.error("ERROR in PUT /api/shipments:", error);
     res.status(500).json({
-      message: "Server error during bulk update",
+      message: "Server error during update",
       details: error.message,
     });
   }
