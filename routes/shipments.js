@@ -11,7 +11,6 @@ import {
   updateShipments,
   softDeleteShipmentsById,
   softDeleteMultipleShipments,
-  updateShipments,
 } from "../controllers/shipments.js";
 
 // Get all shipments with filters, pagination, and customer filter
