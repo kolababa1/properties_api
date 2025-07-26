@@ -221,6 +221,7 @@ const getAShipment = async (req, res) => {
   }
 };
 
+// Update Multiple Shipments
 const updateShipments = async (req, res) => {
   try {
     const { ids, updates } = req.body;
@@ -233,7 +234,6 @@ const updateShipments = async (req, res) => {
       return res.status(400).json({ message: "No update fields provided." });
     }
 
-    // Use updateMany for efficient bulk update
     const result = await Shipment.updateMany(
       { _id: { $in: ids } },
       { $set: updates, updatedBy: req.user.username }
@@ -245,6 +245,35 @@ const updateShipments = async (req, res) => {
     });
   } catch (error) {
     console.error("ERROR in PUT /api/shipments:", error);
+    res.status(500).json({
+      message: "Server error during update",
+      details: error.message,
+    });
+  }
+};
+
+// Update Shipment by Id
+const updateAShipment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { updates } = req.body;
+    if (id.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "No shipment IDs provided for update." });
+    }
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({ message: "No update fields provided." });
+    }
+
+    const result = await Shipment.findByIdAndUpdate(id, updates, { new: true });
+
+    res.status(200).json({
+      message: `Successfully updated shipment.`,
+      data: result,
+    });
+  } catch (error) {
+    console.error("Error updating shipment:", error);
     res.status(500).json({
       message: "Server error during update",
       details: error.message,
@@ -280,4 +309,5 @@ export {
   softDeleteShipmentsById,
   softDeleteMultipleShipments,
   updateShipments,
+  updateAShipment,
 };
