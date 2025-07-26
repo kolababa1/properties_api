@@ -1,6 +1,7 @@
 import Shipment from "../models/Shipment.js";
 import Customer from "../models/Customer.js";
 
+// Create A Shipment
 const createShipment = async (req, res) => {
   try {
     // Validating input
@@ -59,6 +60,7 @@ const createShipment = async (req, res) => {
   }
 };
 
+// Soft Delete Multiple Shipments
 const softDeleteMultipleShipments = async (req, res) => {
   try {
     const { ids } = req.body;
@@ -104,6 +106,7 @@ const softDeleteMultipleShipments = async (req, res) => {
   }
 };
 
+// Get All Shipments
 const getAllShipments = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -125,6 +128,8 @@ const getAllShipments = async (req, res) => {
       .json({ message: `Error occurred while fecthing shipments` });
   }
 };
+
+// Soft Delete A Shipment
 const softDeleteShipmentsById = async (req, res) => {
   try {
     const shipment = await Shipment.findOneAndUpdate(
@@ -158,6 +163,7 @@ const softDeleteShipmentsById = async (req, res) => {
   }
 };
 
+// Get unndeleted Shipments
 const getShipments = async (req, res) => {
   try {
     const { startDate, endDate, page = 1, limit = 10, customer } = req.query;
@@ -212,6 +218,7 @@ const getShipments = async (req, res) => {
   }
 };
 
+// Get A Shipment
 const getAShipment = async (req, res) => {
   try {
     const shipment = await Shipment.findById({
@@ -278,6 +285,7 @@ async function findOrCreateCustomer(data) {
   }
   return customer;
 }
+
 export {
   createShipment,
   getShipments,
