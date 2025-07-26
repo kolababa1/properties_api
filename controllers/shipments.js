@@ -233,7 +233,6 @@ const updateShipments = async (req, res) => {
     if (Object.keys(updates).length === 0) {
       return res.status(400).json({ message: "No update fields provided." });
     }
-
     const result = await Shipment.updateMany(
       { _id: { $in: ids } },
       { $set: updates, updatedBy: req.user.username }
@@ -244,7 +243,7 @@ const updateShipments = async (req, res) => {
       modifiedCount: result.modifiedCount,
     });
   } catch (error) {
-    console.error("ERROR in PUT /api/shipments:", error);
+    console.error("Error updating shipment:", error);
     res.status(500).json({
       message: "Server error during update",
       details: error.message,
