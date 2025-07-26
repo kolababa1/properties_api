@@ -8,6 +8,7 @@ import {
   getAllShipments,
   getShipments,
   getAShipment,
+  updateShipments,
   softDeleteShipmentsById,
   softDeleteMultipleShipments,
   updateShipments,
@@ -22,8 +23,10 @@ router.post("/", auth, authorize("staff", "admin"), createShipment);
 // Get shipment by ID
 router.get("/:id", getAShipment);
 
+// Get Undeleted Shipments
 router.get("/", getShipments);
 
+// Update Shipment
 router.put("/", auth, authorize("staff", "admin"), updateShipments);
 
 router.delete(

@@ -1,6 +1,7 @@
 import Shipment from "../models/Shipment.js";
 import Customer from "../models/Customer.js";
 
+// Create A Shipment
 const createShipment = async (req, res) => {
   try {
     // Validating input
@@ -59,6 +60,7 @@ const createShipment = async (req, res) => {
   }
 };
 
+// Soft Delete Multiple Shipments
 const softDeleteMultipleShipments = async (req, res) => {
   try {
     const { ids } = req.body;
@@ -104,6 +106,7 @@ const softDeleteMultipleShipments = async (req, res) => {
   }
 };
 
+// Get All Shipments
 const getAllShipments = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -125,6 +128,8 @@ const getAllShipments = async (req, res) => {
       .json({ message: `Error occurred while fecthing shipments` });
   }
 };
+
+// Soft Delete A Shipment
 const softDeleteShipmentsById = async (req, res) => {
   try {
     const shipment = await Shipment.findOneAndUpdate(
@@ -158,6 +163,7 @@ const softDeleteShipmentsById = async (req, res) => {
   }
 };
 
+// Get unndeleted Shipments
 const getShipments = async (req, res) => {
   try {
     const { startDate, endDate, page = 1, limit = 10, customer } = req.query;
@@ -212,6 +218,7 @@ const getShipments = async (req, res) => {
   }
 };
 
+// Get A Shipment
 const getAShipment = async (req, res) => {
   try {
     const shipment = await Shipment.findById({
@@ -278,6 +285,37 @@ async function findOrCreateCustomer(data) {
   }
   return customer;
 }
+
+const updateShipments = async (req, res) => {
+  try {
+    const { ids, updates } = req.body;
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "No shipment IDs provided for bulk update." });
+    }
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({ message: "No update fields provided." });
+    }
+
+    // Use updateMany for efficient bulk update
+    const result = await Shipment.updateMany(
+      { _id: { $in: ids } },
+      { $set: updates, updatedBy: req.user.username }
+    );
+
+    res.status(200).json({
+      message: `Successfully updated ${result.modifiedCount} shipments.`,
+      modifiedCount: result.modifiedCount,
+    });
+  } catch (error) {
+    console.error("ERROR in PUT /api/shipments:", error);
+    res.status(500).json({
+      message: "Server error during update",
+      details: error.message,
+    });
+  }
+};
 export {
   createShipment,
   getShipments,
