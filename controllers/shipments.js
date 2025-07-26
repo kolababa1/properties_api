@@ -308,4 +308,5 @@ export {
   softDeleteShipmentsById,
   softDeleteMultipleShipments,
   updateShipments,
+  updateAShipment,
 };
