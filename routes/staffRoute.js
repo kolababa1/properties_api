@@ -25,19 +25,18 @@ router.get("/:id", async (req, res) => {
 // Get all Staffs
 router.get("/", async (req, res) => {
   try {
-    // const page = parseInt(req.query.page) || 1;
-    // const limit = parseInt(req.query.limit) || 10;
-    // const skip = (page - 1) * limit;
-    // const [staffs, total] = await Promise.all([
-    //   staff.find().skip(skip).limit(limit).sort({ name: 1 }),
-    //   staff.countDocuments(),
-    // ]);
-    const staffs = await Users.find();
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const [staffs, total] = await Promise.all([
+      staffs.find().skip(skip).limit(limit).sort({ name: 1 }),
+      staffs.countDocuments(),
+    ]);
     res.json({
       data: staffs,
-      //   currentPage: page,
-      //   totalPages: Math.ceil(total / limit),
-      //   totalItems: total,
+      currentPage: page,
+      totalPages: Math.ceil(total / limit),
+      totalItems: total,
     });
   } catch {
     res.status(500).json({ message: "Server error" });
