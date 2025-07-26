@@ -235,6 +235,7 @@ const getAShipment = async (req, res) => {
   }
 };
 
+// Update Multiple Shipments
 const updateShipments = async (req, res) => {
   try {
     const { ids, updates } = req.body;
