@@ -77,6 +77,7 @@ const softDeleteMultipleShipments = async (req, res) => {
         $set: {
           isDeleted: true,
           deletedAt: new Date(),
+          deletedBy: req.user.username,
         },
       }
     );
@@ -103,13 +104,20 @@ const softDeleteMultipleShipments = async (req, res) => {
   }
 };
 
-const getShipments = async (req, res) => {
+const getAllShipments = async (req, res) => {
   try {
-    const shipments = await Shipment.find();
-
-    res.status(200).json({
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const [shipments, total] = await Promise.all([
+      Shipment.find().skip(skip).limit(limit).sort({ name: 1 }),
+      Shipment.countDocuments(),
+    ]);
+    res.json({
       data: shipments,
-      message: `Shipments fetched successfully`,
+      currentPage: page,
+      totalPages: Math.ceil(total / limit),
+      totalItems: total,
     });
   } catch (error) {
     res
@@ -121,7 +129,13 @@ const softDeleteShipmentsById = async (req, res) => {
   try {
     const shipment = await Shipment.findOneAndUpdate(
       { _id: req.params.id, isDeleted: false },
-      { $set: { isDeleted: true, dele: new Date() } },
+      {
+        $set: {
+          isDeleted: true,
+          dele: new Date(),
+          deletedBy: req.user.username,
+        },
+      },
       { new: true }
     );
     if (!shipment) {
@@ -144,56 +158,59 @@ const softDeleteShipmentsById = async (req, res) => {
   }
 };
 
-// const getAllShipments = async (req, res) => {
-//   try {
-//     const { startDate, endDate, page = 1, limit = 10, customer } = req.query;
-//     const skip = (page - 1) * limit;
+const getShipments = async (req, res) => {
+  try {
+    const { startDate, endDate, page = 1, limit = 10, customer } = req.query;
+    const skip = (page - 1) * limit;
 
-//     // Build date filter
-//     const dateFilter = {};
-//     if (startDate) dateFilter.$gte = new Date(startDate);
-//     if (endDate) dateFilter.$lte = new Date(endDate);
+    // Build date filter
+    const dateFilter = {};
+    if (startDate) dateFilter.$gte = new Date(startDate);
+    if (endDate) dateFilter.$lte = new Date(endDate);
 
-//     // Build base query
-//     const query = { isDeleted: false };
-//     if (startDate || endDate) query.createdAt = dateFilter;
+    // Build base query
+    const query = { isDeleted: false };
+    if (startDate || endDate) query.createdAt = dateFilter;
 
-//     // If a 'customer' search term is provided, find matching customers and add their IDs to the query
-//     if (customer) {
-//       const customers = await Customer.find({
-//         $or: [
-//           { name: new RegExp(customer, "i") },
-//           { phone: new RegExp(customer, "i") },
-//         ],
-//       }).select("_id");
-//       const customerIds = customers.map((c) => c._id);
-//       query.$or = [
-//         { sender: { $in: customerIds } },
-//         { receiver: { $in: customerIds } },
-//       ];
-//     }
+    // If a 'customer' search term is provided, find matching customers and add their IDs to the query
+    if (customer) {
+      const customers = await Customer.find({
+        $or: [
+          { name: new RegExp(customer, "i") },
+          { phone: new RegExp(customer, "i") },
+        ],
+      }).select("_id");
+      const customerIds = customers.map((c) => c._id);
+      query.$or = [
+        { sender: { $in: customerIds } },
+        { receiver: { $in: customerIds } },
+      ];
+    }
 
-//     const [shipments, total] = await Promise.all([
-//       Shipment.find(query)
-//         .populate("sender")
-//         .populate("receiver")
-//         .skip(skip)
-//         .limit(parseInt(limit))
-//         .sort({ createdAt: -1 }),
-//       Shipment.countDocuments(query),
-//     ]);
+    const [shipments, total] = await Promise.all([
+      Shipment.find(query)
+        .populate("sender")
+        .populate("receiver")
+        .skip(skip)
+        .limit(parseInt(limit))
+        .sort({ createdAt: -1 }),
+      Shipment.countDocuments(query),
+    ]);
 
-//     res.json({
-//       data: shipments,
-//       currentPage: Number(page),
-//       totalPages: Math.ceil(total / limit),
-//       totalItems: total,
-//     });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: "Server error" });
-//   }
-// };
+    res.json({
+      data: shipments,
+      currentPage: Number(page),
+      totalPages: Math.ceil(total / limit),
+      totalItems: total,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      data: err,
+      message: "Server error",
+    });
+  }
+};
 
 const getAShipment = async (req, res) => {
   try {
@@ -208,6 +225,37 @@ const getAShipment = async (req, res) => {
     res.json(shipment);
   } catch {
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+const updateShipments = async (req, res) => {
+  try {
+    const { ids, updates } = req.body;
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "No shipment IDs provided for bulk update." });
+    }
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({ message: "No update fields provided." });
+    }
+
+    // Use updateMany for efficient bulk update
+    const result = await Shipment.updateMany(
+      { _id: { $in: ids } },
+      { $set: updates, updatedBy: req.user.username }
+    );
+
+    res.status(200).json({
+      message: `Successfully updated ${result.modifiedCount} shipments.`,
+      modifiedCount: result.modifiedCount,
+    });
+  } catch (error) {
+    console.error("ERROR in PUT /api/shipments:", error);
+    res.status(500).json({
+      message: "Server error during bulk update",
+      details: error.message,
+    });
   }
 };
 
@@ -233,8 +281,9 @@ async function findOrCreateCustomer(data) {
 export {
   createShipment,
   getShipments,
-  // getAllShipments,
+  getAllShipments,
   getAShipment,
   softDeleteShipmentsById,
   softDeleteMultipleShipments,
+  updateShipments,
 };

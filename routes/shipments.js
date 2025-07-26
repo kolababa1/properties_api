@@ -5,12 +5,16 @@ import auth from "../middleware/auth.js";
 import authorize from "../middleware/authorize.js";
 import {
   createShipment,
-  // getAllShipments,
+  getAllShipments,
   getShipments,
   getAShipment,
   softDeleteShipmentsById,
   softDeleteMultipleShipments,
+  updateShipments,
 } from "../controllers/shipments.js";
+
+// Get all shipments with filters, pagination, and customer filter
+router.get("/all", getAllShipments);
 
 // Create shipment
 router.post("/", auth, authorize("staff", "admin"), createShipment);
@@ -18,8 +22,9 @@ router.post("/", auth, authorize("staff", "admin"), createShipment);
 // Get shipment by ID
 router.get("/:id", getAShipment);
 
-// Get all shipments with filters, pagination, and customer filter
 router.get("/", getShipments);
+
+router.put("/", auth, authorize("staff", "admin"), updateShipments);
 
 router.delete(
   "/:id",

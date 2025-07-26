@@ -1,6 +1,15 @@
 import express from "express";
 const router = express.Router();
 import Users from "../models/User.js";
+import auth from "../middleware/auth.js";
+
+router.get("/auth", auth, async (req, res) => {
+  res.status(200).json({
+    id: req.user._id,
+    username: req.user.username,
+    phone: req.user.phone,
+  });
+});
 
 // Get a User
 router.get("/:id", async (req, res) => {
