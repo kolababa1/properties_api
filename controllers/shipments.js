@@ -1,5 +1,6 @@
 import Shipment from "../models/Shipment.js";
 import Customer from "../models/Customer.js";
+import { mongoose } from "mongoose";
 
 // Create A Shipment
 const createShipment = async (req, res) => {
@@ -254,29 +255,42 @@ const updateShipments = async (req, res) => {
 // Update Shipment by Id
 const updateAShipment = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { updates } = req.body;
-    if (id.length === 0) {
-      return res
-        .status(400)
-        .json({ message: "No shipment IDs provided for update." });
+    const { id } = req.params; // Get the item ID from URL parameters
+    const updateData = req.body; // Get the update data from the request body
+
+    // Basic validation (you'd want more robust validation in a real app)
+    if (!id) {
+      return res.status(400).json({ message: "Shipment ID is required." });
     }
-    if (Object.keys(updates).length === 0) {
-      return res.status(400).json({ message: "No update fields provided." });
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({ message: "No update data provided." });
     }
 
-    const result = await Shipment.findByIdAndUpdate(id, updates, { new: true });
-
-    res.status(200).json({
-      message: `Successfully updated shipment.`,
-      data: result,
+    // Find and update the item
+    // { new: true } returns the updated document
+    // { runValidators: true } runs schema validators on the update
+    const updatedItem = await Shipment.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true,
     });
+
+    if (!updatedItem) {
+      return res.status(404).json({ message: "Shipment not found." });
+    }
+
+    res.status(200).json(updatedItem);
   } catch (error) {
-    console.error("Error updating shipment:", error);
-    res.status(500).json({
-      message: "Server error during update",
-      details: error.message,
-    });
+    console.error("Error updating item:", error);
+    // Handle validation errors or other database errors
+    if (error.name === "CastError") {
+      return res.status(400).json({ message: "Invalid Shipment ID format." });
+    }
+    if (error.name === "ValidationError") {
+      return res.status(400).json({ message: error.message });
+    }
+    res
+      .status(500)
+      .json({ message: "Server error during update", details: error.message });
   }
 };
 
